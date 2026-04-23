@@ -1,6 +1,7 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js';
-import { getFirestore, collection, onSnapshot, query, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
+import { getFirestore, onSnapshot, query, collection, orderBy, limit } from 'firebase/firestore';
+import firebaseConfig from '../firebase-applet-config.json';
 
 // App State & Router
 const globalApp = {
@@ -12,9 +13,6 @@ const globalApp = {
     async init() {
         try {
             console.log('Initializing HospEase Core...');
-            const configRes = await fetch('/firebase-applet-config.json');
-            if (!configRes.ok) throw new Error('Firebase configuration file not found.');
-            const firebaseConfig = await configRes.json();
             
             const app = initializeApp(firebaseConfig);
             this.auth = getAuth(app);
