@@ -1,0 +1,67 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() { return request.auth != null; }
+    function isEmailVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
+    function isAdmin() { 
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == "avinashpandit1221@gmail.com"
+      );
+    }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+
+    // --- Validation Helpers ---
+    function isValidHospital(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() < 200 &&
+             data.email is string && data.email.size() > 5 &&
+             data.status in ['active', 'inactive'];
+    }
+
+    function isValidTrip(data) {
+      return data.hospitalId is string && isValidId(data.hospitalId) &&
+             data.status in ['requested', 'accepted', 'en_route', 'completed'] &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidReview(data) {
+      return data.hospitalId is string &&
+             data.rating is int && data.rating >= 1 && data.rating <= 5;
+    }
+
+    // --- Collection Rules ---
+
+    match /admins/{adminId} {
+      allow read: if isAdmin();
+      allow write: if false; // Admins are managed via console or special scripts
+    }
+
+    match /hospitals/{hospitalId} {
+      allow read, write: if true;
+    }
+
+    match /customers/{customerId} {
+      allow read, write: if true;
+    }
+
+    match /trips/{tripId} {
+      allow read, write: if true;
+    }
+
+    match /reviews/{reviewId} {
+      allow read, write: if true;
+    }
+
+    match /subscriptionPlans/{planId} {
+      allow read, write: if true;
+    }
+  }
+}

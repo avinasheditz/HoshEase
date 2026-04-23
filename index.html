@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HospEase Admin | Healthcare Command Center</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS 4 -->
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Styles -->
+    <style>
+        @theme {
+            --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+            --font-serif: "Playfair Display", serif;
+            --color-primary: #3b82f6; /* Restoring Blue 500 for better hierarchy */
+            --color-background: #020617; /* Slate 950 */
+            --color-sidebar: #020617; /* Consistent deep slate */
+            --color-card: #0f172a; /* Slate 900 */
+        }
+        
+        .active-dashboard { background: rgba(59, 130, 246, 0.1); color: #60a5fa; border-right: 4px solid #3b82f6; }
+        .active-hospitals { background: rgba(16, 185, 129, 0.1); color: #34d399; border-right: 4px solid #10b981; }
+        .active-customers { background: rgba(139, 92, 246, 0.1); color: #a78bfa; border-right: 4px solid #8b5cf6; }
+        .active-trips { background: rgba(245, 158, 11, 0.1); color: #fbbf24; border-right: 4px solid #f59e0b; }
+        .active-reviews { background: rgba(244, 63, 94, 0.1); color: #fb7185; border-right: 4px solid #f43f5e; }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+        .glass { background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid #1e293b; }
+        
+        /* Dynamic color classes for hospital icons */
+        .node-color-0 { background: #3b82f6; }
+        .node-color-1 { background: #10b981; }
+        .node-color-2 { background: #f59e0b; }
+        .node-color-3 { background: #ef4444; }
+        .node-color-4 { background: #8b5cf6; }
+        .node-color-5 { background: #ec4899; }
+    </style>
+</head>
+<body class="antialiased text-slate-200">
+    <div id="auth-app" class="block">
+        <!-- Auth View -->
+        <div class="min-h-screen flex items-center justify-center p-4 bg-background">
+            <div class="w-full max-w-md bg-card rounded-3xl shadow-2xl shadow-blue-500/5 p-8 border border-slate-800">
+                <div class="text-center mb-8">
+                    <div class="bg-primary/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-primary/20">
+                        <i data-lucide="heart-pulse" class="text-primary w-8 h-8"></i>
+                    </div>
+                    <h1 class="text-4xl font-black tracking-tighter text-primary">HospEase</h1>
+                    <p class="text-slate-500 font-semibold italic serif mt-1">Healthcare Management Suite</p>
+                </div>
+                <form id="login-form" class="space-y-5">
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 pl-1 mb-2 block">Authorized Email</label>
+                        <input type="email" id="login-username" value="admin@hospice.com" required autocomplete="username" class="w-full h-13 px-5 rounded-2xl bg-black border border-slate-800 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-800 text-white font-medium" placeholder="admin@hospice.com">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 pl-1 mb-2 block">Security Token</label>
+                        <input type="password" id="login-password" value="password" required autocomplete="current-password" class="w-full h-13 px-5 rounded-2xl bg-black border border-slate-800 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-slate-800 text-white font-medium" placeholder="password">
+                    </div>
+                    <button type="submit" id="login-button" class="w-full h-14 bg-white text-black rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-white/5 hover:bg-slate-200 active:scale-[0.98] transition-all flex items-center justify-center gap-3 mt-6">
+                        <span>Initiate Node Session</span>
+                        <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    </button>
+                </form>
+                <div class="mt-10 text-center">
+                    <p class="text-[10px] text-slate-600 font-bold uppercase tracking-[0.2em] leading-relaxed">
+                        Secure Gatekeeping • Authorized Access Only
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-app" class="hidden flex flex-col md:flex-row min-h-screen">
+        <!-- Mobile Header -->
+        <header class="md:hidden h-16 bg-sidebar px-6 flex items-center justify-between border-b border-slate-800">
+             <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+                    <i data-lucide="heart-pulse" class="text-white w-4 h-4"></i>
+                </div>
+                <span class="text-xl font-bold text-white tracking-normal">HospEase</span>
+            </div>
+            <button class="text-slate-400"><i data-lucide="menu" class="w-6 h-6"></i></button>
+        </header>
+
+        <!-- Dashboard Sidebar (Desktop) -->
+        <aside class="hidden md:flex w-68 bg-sidebar text-slate-400 flex-col h-screen sticky top-0 shrink-0 border-r border-slate-800">
+            <div class="p-8">
+                <div class="flex items-center gap-3 mb-10">
+                    <div class="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-2xl shadow-white/5">
+                        <i data-lucide="heart-pulse" class="text-black w-6 h-6"></i>
+                    </div>
+                    <span class="text-3xl font-black text-primary tracking-tighter leading-none">HospEase</span>
+                </div>
+                <nav class="space-y-1.5">
+                    <a href="#dashboard" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:text-white hover:bg-slate-800/10 font-bold group" id="nav-dashboard">
+                        <i data-lucide="layout-grid" class="w-4.5 h-4.5 group-hover:text-primary transition-colors"></i> Command Center
+                    </a>
+                    <a href="#hospitals" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:text-white hover:bg-slate-800/10 font-bold group" id="nav-hospitals">
+                        <i data-lucide="hospital" class="w-4.5 h-4.5 group-hover:text-emerald-500 transition-colors"></i> Institution Node
+                    </a>
+                    <a href="#customers" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:text-white hover:bg-slate-800/10 font-bold group" id="nav-customers">
+                        <i data-lucide="users" class="w-4.5 h-4.5 group-hover:text-indigo-500 transition-colors"></i> Node Registry
+                    </a>
+                    <a href="#trips" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:text-white hover:bg-slate-800/10 font-bold group" id="nav-trips">
+                        <i data-lucide="navigation" class="w-4.5 h-4.5 group-hover:text-amber-500 transition-colors"></i> Mission Log
+                    </a>
+                    <a href="#reviews" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:text-white hover:bg-slate-800/10 font-bold group" id="nav-reviews">
+                        <i data-lucide="activity" class="w-4.5 h-4.5 group-hover:text-rose-500 transition-colors"></i> Sentiment Pulse
+                    </a>
+                </nav>
+            </div>
+            
+            <div class="mt-auto p-6 border-t border-slate-800 bg-slate-900/50">
+                <div class="flex items-center gap-4 px-2 py-4 mb-2">
+                    <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center font-black text-primary text-sm">AD</div>
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-sm font-bold text-white truncate">System Admin</p>
+                        <p class="text-[10px] uppercase font-bold tracking-widest text-slate-500">Node Commander</p>
+                    </div>
+                </div>
+                <button onclick="app.logout()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Logout System
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 min-w-0 flex flex-col bg-background">
+            <header class="h-18 glass px-8 flex items-center sticky top-0 z-20">
+                <h1 id="view-title" class="text-base font-black uppercase tracking-[0.25em] text-slate-500 font-sans">Dashboard</h1>
+                <div class="ml-auto flex items-center gap-5">
+                    <button class="w-10 h-10 rounded-xl hover:bg-slate-800 flex items-center justify-center transition-all relative">
+                        <i data-lucide="bell" class="w-5 h-5 text-slate-400"></i>
+                        <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-slate-950"></span>
+                    </button>
+                </div>
+            </header>
+
+            <div id="content-area" class="p-10 max-w-7xl">
+                <!-- dynamic content loads here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module" src="/src/app.js"></script>
+</body>
+</html>

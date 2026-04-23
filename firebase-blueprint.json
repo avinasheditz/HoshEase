@@ -1,0 +1,114 @@
+{
+  "entities": {
+    "Hospital": {
+      "title": "Hospital",
+      "description": "Details of the hospital registered in the system.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "address": { "type": "string" },
+        "city": { "type": "string" },
+        "state": { "type": "string" },
+        "contactNumber": { "type": "string" },
+        "email": { "type": "string" },
+        "subscriptionPlanId": { "type": "string" },
+        "subscriptionExpiry": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "adminDetails": { "type": "object" },
+        "documentUrls": { "type": "array" },
+        "averageRating": { "type": "number" },
+        "totalTrips": { "type": "integer" }
+      },
+      "required": ["name", "email", "status"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Information about customers/patients using the service.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "location": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "phone"]
+    },
+    "Trip": {
+      "title": "Trip",
+      "description": "Real-time trip records between hospitals and patients.",
+      "type": "object",
+      "properties": {
+        "hospitalId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "driverName": { "type": "string" },
+        "driverPhone": { "type": "string" },
+        "patientName": { "type": "string" },
+        "pickupLocation": { "type": "string" },
+        "dropLocation": { "type": "string" },
+        "status": { "type": "string", "enum": ["requested", "accepted", "en_route", "completed"] },
+        "startTime": { "type": "string", "format": "date-time" },
+        "endTime": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["hospitalId", "status", "createdAt"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Hospital reviews submitted by customers.",
+      "type": "object",
+      "properties": {
+        "hospitalId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "rating": { "type": "integer" },
+        "comment": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["hospitalId", "rating"]
+    },
+    "SubscriptionPlan": {
+      "title": "Subscription Plan",
+      "description": "Available subscription tiers.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "features": { "type": "array" }
+      }
+    }
+  },
+  "firestore": {
+    "/hospitals/{hospitalId}": {
+      "schema": "Hospital",
+      "description": "Collection of registered hospitals."
+    },
+    "/customers/{customerId}": {
+      "schema": "Customer",
+      "description": "Collection of registered customers."
+    },
+    "/trips/{tripId}": {
+      "schema": "Trip",
+      "description": "Collection of all trips."
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Collection of hospital reviews."
+    },
+    "/subscriptionPlans/{planId}": {
+      "schema": "SubscriptionPlan",
+      "description": "Available subscription plans."
+    },
+    "/admins/{adminId}": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string" }
+        }
+      },
+      "description": "Whitelisted admin users."
+    }
+  }
+}
